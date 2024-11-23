@@ -1,0 +1,12 @@
+cpus = 2
+game_rounds = 5
+title = basic
+adjudicate = 400
+
+player = depth_5
+invoke = ../bin/leiserchess
+depth = 5
+
+player = depth_4
+invoke = ../bin/leiserchess
+depth = 4

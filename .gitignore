@@ -1,0 +1,4 @@
+tester/output/*
+tester/error/*
+tester/pgnout/*
+tester/*.sh
