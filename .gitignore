@@ -2,3 +2,7 @@ tester/output/*
 tester/error/*
 tester/pgnout/*
 tester/*.sh
+training/output/*
+training/error/*
+training/dataset/*
+training/*.sh

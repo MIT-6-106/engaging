@@ -3,6 +3,8 @@ import os
 import argparse
 import shutil
 import time
+import csv
+import io
 from datetime import datetime
 
 # Get the current time and format it as a string
@@ -14,8 +16,7 @@ directory_name = f"dir_{current_time}"
 # Create the directory
 os.makedirs(os.path.join("output", directory_name), exist_ok=True)
 os.makedirs(os.path.join("error", directory_name), exist_ok=True)
-os.makedirs(os.path.join("pgnout", directory_name), exist_ok=True)
-
+os.makedirs(os.path.join("dataset", directory_name), exist_ok=True)
 
 # Set up argument parser
 parser = argparse.ArgumentParser(description="Generate and submit a SLURM sbatch file with custom parameters.")
@@ -57,10 +58,10 @@ parser.add_argument(
     help="Number of jobs in the SLURM array. Default is 50."
 )
 parser.add_argument(
-    "--test",
-    type=str,
-    required=True,
-    help="Test file for the autotester."
+    "--worker",
+    type=int,
+    default=2,
+    help="Number of workers per training job"
 )
 
 parser.add_argument(
@@ -70,24 +71,32 @@ parser.add_argument(
     help="Show partial ratings in this frequency. Default is every 60s"
 )
 
+parser.add_argument(
+    "--binary",
+    type=str,
+    default=os.path.join("..", "bin", "leiserchess"),
+    help="Use this binary to generate data"
+)
+
 # Parse the arguments
 args = parser.parse_args()
 
 # Access parsed arguments
-sbatch_file = 'tester.sh'
+sbatch_file = 'datagen.sh'
 cores = args.cores
 nodes = args.nodes
 minutes = args.minutes
 hours = args.hours
 email = args.email
 batch = args.batch
+worker = args.worker
 update_freq = args.update_frequency
-test_file = os.path.join('pgnout', directory_name, 'test.txt')
-shutil.copy(args.test, test_file) 
+out_dir = os.path.join('dataset', directory_name)
+binary = args.binary
 
 print('Dumping all outputs to', os.path.join('output', directory_name))
 print('Dumping all errors to', os.path.join('error', directory_name))
-print('Dumping all pgns to', os.path.join('pgnout', directory_name))
+print('Dumping dataset to', os.path.join('dataset', directory_name))
 print('')
 
 script = [
@@ -102,13 +111,12 @@ script = [
     f"#SBATCH --array=1-{batch}",
     f"#SBATCH --mail-type=BEGIN,END #Mail when job starts and ends",
     f"#SBATCH --mail-user={email} #email recipient",
-    f"module load jdk",
-    f"make test TEST_FILE={test_file} BATCH_ID=$SLURM_ARRAY_TASK_ID"
+    f"module load python/3.9.4",
+    f"python3 datagen.py --jobid $SLURM_ARRAY_TASK_ID --worker {worker} --out_dir {out_dir} --binary {binary}"
 ]
 
 with open(sbatch_file, 'w') as f:
     f.write('\n'.join(script))
-
 
 def wait_for_job(job_id):
     while True:
@@ -122,7 +130,7 @@ def wait_for_job(job_id):
             )
             if job_id in result.stdout:
                 print(f"Job {job_id} is still running...")
-                rating_calculator()
+                game_update()
             else:
                 print(f"Job {job_id} has finished.")
                 break
@@ -153,15 +161,9 @@ def submit_job(sbatch_file):
         return None
 
 
-def rating_calculator(is_final=False):
+def game_update():
     try:
-        os.remove(os.path.join('pgnout', directory_name, 'test.pgn'))
-    except: 
-        pass
-
-    try:
-        # Combine all .pgn files into test.pgn
-        cat_command = ["bash", "-c", f"cat pgnout/{directory_name}/*.pgn > pgnout/{directory_name}/test.pgn"]
+        cat_command = ["bash", "-c", f"cat {out_dir}/*.txt"]
         result_cat = subprocess.run(
             cat_command,
             check=True,
@@ -169,32 +171,34 @@ def rating_calculator(is_final=False):
             stderr=subprocess.PIPE,
             text=True
         )
-        if is_final:
-            print(os.path.join('pgnout', directory_name, 'test.pgn'), "generated successfully.")
-
-        # Run the shell command
-        command = ["bash", "-c", f"cd pgn && ./pgnrate.tcl ../pgnout/{directory_name}/test.pgn"]
-        result = subprocess.run(
-            command,
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-
-        if is_final:
-            print(f"Final Rating:\n{result.stdout.strip()}")
-        else:
-            print(f"Partial Rating So Far:\n{result.stdout.strip()}")
-            print('')
+        print(len(result_cat.stdout.split('\n')), 'rows of data generated')
     except subprocess.CalledProcessError as e:
-        if is_final:
-            print("Failed to calculate rating.")
-            print(f"Error: {e.stderr.strip()}")
+        print(f"[WARN] {e.stderr.strip()}")
 
 job_id = submit_job(sbatch_file)
 print('')
 
 if job_id:
     wait_for_job(job_id)
-    rating_calculator(True)
+    game_update()
+    try:
+        merge_command = ["bash", "-c", f"cat {out_dir}/*.txt"]
+        result_merge = subprocess.run(
+            merge_command,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+        csv_like = io.StringIO(result_merge.stdout.strip())
+        rows = [r for r in csv.reader(csv_like)]
+        max_col = max(map(len, rows))
+        print(max_col, ' columns generated for each row')
+        dataset = [','.join(r) for r in rows if len(r) == max_col]
+        dataset_path = os.path.join(out_dir, 'complete.txt')
+        with open(dataset_path, 'w') as f:
+            f.write('\n'.join(dataset))   
+            print('dataset generated at', dataset_path)
+    except Exception as e:
+        print('Error occured while generating dataset:')
+        print(e) 
