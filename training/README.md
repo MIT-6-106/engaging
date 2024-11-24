@@ -1,11 +1,18 @@
 # Project 4 Training Script
 
 ## Usage
-Run `python3 datagen.py [num_workers]` and terminate when you have a sufficient amount of data(diminishing returns after a few million positions)
+First, ssh into the engaging server as usual. Then install `numpy` if it's not installed already
 
-Then, either run `python3 project4_training_script.py` or copy the file and data to google colab. Enter desired output vector weights into `options.h`
+    $ module load python/3.9.4
+    $ pip install numpy --user
 
-For more information, see [Texel's Tuning Method](https://www.chessprogramming.org/Texel%27s_Tuning_Method)
+Then run 
 
-## Credits
-Original training script provided by Zachary Deng.
+    $ python3 run.py --minutes 45 --email youremail@gmail.com
+    
+
+This will run the training script for 45 minutes and generate the dataset into `dataset/{game_dir}/complete.txt`. The output of `run.py` will log where the dataset will be generated.
+
+## Training the weights
+
+Engaging server is not suitable for training weights. You can download the dataset from the engaging server using scp (see the tester directory) and run the training script on google colab or a local machine.
