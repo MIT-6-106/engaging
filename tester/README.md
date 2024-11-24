@@ -2,9 +2,9 @@ QUICK START GUIDE
 --------------------------------------------------------------------------------
 This is a very brief overview of the autotester framework for the Engaging cluster. The overall framework is much more powerful and we would recommend reading the `README.md` for the `project4/tester` directory first. Here we will focus on how you can use it to run autotester on the Engaging clusters.
 
-First ssh into the Engaging cluster as usual ([Link](https://engaging-web.mit.edu/eofe-wiki/logging_in/ssh/)). Once you have access to the shell
+First ssh into the Engaging cluster as usual ([Link](https://engaging-web.mit.edu/eofe-wiki/logging_in/ssh/)). Assuming you have already cloned this repo in the engaging server
 
-1. Run `module load jdk` to enable Java. Then run `make` to compile all dependencies
+1. Run `module load jdk` to enable Java. Then cd into this directory and run `make clean && make` to compile all dependencies
 
 2. Write a configuration file called `mytest.txt`. An example can be found in
    `tests/basic.txt`. The configuration file MUST end with `.txt` extension.
@@ -54,9 +54,9 @@ where `JOBID` is the id of your job. You can find this id from the output of `ru
 TRANSFERRING LEISERCHESS BINARY TO THE SERVER
 --------------------------------------------------------------------------------
 
-You may have noticed, there is no way to compile your code in the engaging server. For this we recommend compiling your program locally with 
+You may have noticed, there is no way to compile your code in the engaging server. For this we recommend changing your `player/Makefile` to this [Makefile](https://raw.githubusercontent.com/MIT-6-106/engaging/refs/heads/main/tester/compile/Makefile) and compiling your program locally with 
 
-	$ make ENGAGING=1
+	$ make clean && make ENGAGING=1
 
 and transferring the `leiserchess` binary to the engaging server by using `scp`. It could look something like
 
