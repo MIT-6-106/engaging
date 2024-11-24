@@ -21,6 +21,8 @@ First ssh into the Engaging cluster as usual ([Link](https://engaging-web.mit.ed
 
 5. You can see live ratings of the players every 60 seconds.
 
+6. Once all games are over, you can view the `pgn` file at `pgnout/{game_dir}/test.pgn`. where `game_dir` is the unique game directory for each run. The output of `run.py` will also log the location of the `pgn` file.
+
 CONFIGURATION FILE SYNTAX
 --------------------------------------------------------------------------------
 Here is a minimal configuration file example:
@@ -48,7 +50,7 @@ If you would like to cancel the jobs that are running, you can run
 
         $ scancel JOBID
 
-where `JOBID` is the id of your job. You can find this id from the output of `run.py` as well as by running `squeue -u <kerb>` where the latter lists all the jobs you have running. If you want to run multiple instances of `run.py` simutaneously, we would recommmend using `screen` inside the engaging server to manange different runs.
+where `JOBID` is the id of your job. You can find this id from the output of `run.py` as well as by running `squeue -u <kerb>` where the latter lists all the jobs you have running.
 
 
 TRANSFERRING LEISERCHESS BINARY TO THE SERVER

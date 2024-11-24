@@ -13,7 +13,9 @@ Then run
     $  python3 run.py --minutes 10 --email youremail@gmail.com --binary ../bin/leiserchess --batch 15
     
 
-This will run the training script for 10 minutes and with 15 jobs and generate the dataset into `dataset/{game_dir}/complete.txt`. The output of `run.py` will log the `game_dir`. Here `../bin/leiserchess` is the path to the binary that will be used to generate the dataset, but feel free to change it accordingly. You will need to use `scp` to transfer the binary from your local machine to the engaging server. See the tester directory `README.md` for reference.
+This will run the training script for 10 minutes and with 15 jobs and generate the dataset into `dataset/{game_dir}/complete.txt` where `{game_dir}` is a unique directory for each run. The output of `run.py` will also log the location of the dataset file. 
+
+Also in the command, `--binary ../bin/leiserchess` is the path to the binary that will be used to generate the dataset, but feel free to change it accordingly. You will need to use `scp` to transfer the binary from your local machine to the engaging server. See the tester directory `README.md` for reference.
 
 ## Training the weights
 
