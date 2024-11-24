@@ -54,7 +54,7 @@ where `JOBID` is the id of your job. You can find this id from the output of `ru
 TRANSFERRING LEISERCHESS BINARY TO THE SERVER
 --------------------------------------------------------------------------------
 
-You may have noticed, there is no way to compile your code in the engaging server. For this we recommend compiling your program locally with 
+You may have noticed, there is no way to compile your code in the engaging server. For this we recommend changing your `player/Makefile` to this [Makefile](https://raw.githubusercontent.com/MIT-6-106/engaging/refs/heads/main/tester/compile/Makefile) and compiling your program locally with 
 
 	$ make ENGAGING=1
 
