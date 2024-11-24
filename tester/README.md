@@ -1,23 +1,25 @@
 QUICK START GUIDE 
 --------------------------------------------------------------------------------
-This is a very brief overview of the autotester framework for the Engaging cluster. The overall framework is much more powerful and we would recommend reading the `README.md` for the `project4/tester` directory first.
+This is a very brief overview of the autotester framework for the Engaging cluster. The overall framework is much more powerful and we would recommend reading the `README.md` for the `project4/tester` directory first. Here we will focus on how you can use it to run autotester on the Engaging clusters.
 
-First ssh into the Engaging cluster as usual.
+First ssh into the Engaging cluster as usual ([Link](https://engaging-web.mit.edu/eofe-wiki/logging_in/ssh/)). Once you have access to the shell
 
 1. Run `module load jdk` to enable Java. Then run `make` to compile all dependencies
 
 2. Write a configuration file called `mytest.txt`. An example can be found in
-   `tests/basic.txt`. The configuration file MUST end with '.txt' extension.
+   `tests/basic.txt`. The configuration file MUST end with `.txt` extension.
 
 3. Run `module load python/3.9.4` to enable python. Run the autotester with
 
         $ python3 run.py --email "youremail@gmail.com" --test tests/mytest.txt
 
-    (where `tests/mytest.txt` is the name of your test configuration file. You can also use `basic.txt` for starters). You can run 
+    (where `tests/mytest.txt` is the name of your test configuration file. You can also use `basic.txt` for starters). You can run
+   
         $ python3 run.py --help
+   
     to use more advanced testing features. 
 
-4. You can see live ratings of the players every 60 seconds.
+5. You can see live ratings of the players every 60 seconds.
 
 CONFIGURATION FILE SYNTAX
 --------------------------------------------------------------------------------
@@ -40,9 +42,10 @@ Here is a minimal configuration file example:
 
     ----------------[ snip ]----------------
 
-This test file will actually run 10 \* 50 = 500 games when run with the `run.py` script because it will launch the autotester in `50` jobs (by default) in the engaging cluster. You can change the number of jobs by using `--batch` flag. Generally we would recommend going with the default configuration. Try not to use more than `200` jobs at a time.
+This test file will actually run 10 \* 50 = 500 games when run with the `run.py` script because it will launch `50` (by default) jobs of the autotester in the engaging cluster. You can change the number of jobs by using `--batch` flag. Generally we would recommend going with the default configuration. Try not to use more than `200` jobs at a time.
 
 If you would like to cancel the jobs that are running, you can run 
-   $ scancel <JOBID>
 
-where `JOBID` is the id of your job. You can find this id from the output of `run.py` as well as by running `squeue -u <kerb>` where the latter lists all the jobs you have running.
+        $ scancel JOBID
+
+where `JOBID` is the id of your job. You can find this id from the output of `run.py` as well as by running `squeue -u <kerb>` where the latter lists all the jobs you have running. If you want to run multiple instances of `run.py` simutaneously, we would recommmend using `screen` inside the engaging server to manange different runs.
