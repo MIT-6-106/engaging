@@ -49,3 +49,17 @@ If you would like to cancel the jobs that are running, you can run
         $ scancel JOBID
 
 where `JOBID` is the id of your job. You can find this id from the output of `run.py` as well as by running `squeue -u <kerb>` where the latter lists all the jobs you have running. If you want to run multiple instances of `run.py` simutaneously, we would recommmend using `screen` inside the engaging server to manange different runs.
+
+
+TRANSFERRING LEISERCHESS BINARY TO THE SERVER
+--------------------------------------------------------------------------------
+
+You may have noticed, there is no way to compile your code in the engaging server. For this we recommend compiling your program locally with 
+
+	$ make ENGAGING=1
+
+and transferring the `leiserchess` binary to the engaging server by using `scp`. It could look something like
+
+	$ scp /path/to/leiserchess/binary <kerb>@eofe7.mit.edu:/path/to/engaging/bin/<binary_name>
+
+where replace the `kerb` with your kerb and and replace the `binary_name` with whatever name you want.
