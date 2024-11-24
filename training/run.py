@@ -36,7 +36,7 @@ parser.add_argument(
 parser.add_argument(
     "--minutes",
     type=int,
-    default=45,
+    default=10,
     help="Runtime in minutes to request. Default is 45."
 )
 parser.add_argument(
@@ -54,7 +54,7 @@ parser.add_argument(
 parser.add_argument(
     "--batch",
     type=int,
-    default=50,
+    default=15,
     help="Number of jobs in the SLURM array. Default is 50."
 )
 parser.add_argument(

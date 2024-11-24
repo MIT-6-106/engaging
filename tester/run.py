@@ -55,7 +55,7 @@ parser.add_argument(
     type=int,
     default=50,
     help="Number of jobs in the SLURM array. Default is 50."
-)
+
 parser.add_argument(
     "--test",
     type=str,
